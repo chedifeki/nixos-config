@@ -6,7 +6,6 @@
 	let
 		systemSettings =  {
 			system 	 = "x86_64-linux";
-			hostname = "vm";
 			timezone = "Europe/Brussels";
 			locale   = "en_US.UTF-8";
 	 		layout   = "fr";
@@ -32,19 +31,45 @@
 		
 		lib = nixpkgs.lib;
 	in {
-
+								
 		nixosConfigurations = {
-			"${systemSettings.hostname}" = lib.nixosSystem {
+      dragon = lib.nixosSystem {
 				system = systemSettings.system;
 				specialArgs = {
 					inherit pkgs-unstable;
 					inherit userSettings;
 					inherit systemSettings;
-					
 					inherit hyprland hyprlock hypridle ;
 				};
 				modules =  [
-					./configuration.nix
+					./hosts/dragon/configuration.nix
+					home-manager.nixosModules.home-manager {
+						home-manager = {
+							useGlobalPkgs = true;
+							useUserPackages = true;
+							users.${userSettings.user} = {
+								imports = [./home/${userSettings.user}/dragon/home.nix];
+							};
+							extraSpecialArgs = {
+								inherit pkgs-unstable;
+								inherit userSettings;
+								inherit nixvim;
+
+							};	
+						};
+					}
+				];
+			};
+			vb-vm = lib.nixosSystem {
+				system = systemSettings.system;
+				specialArgs = {
+					inherit pkgs-unstable;
+					inherit userSettings;
+					inherit systemSettings;
+					inherit hyprland hyprlock hypridle ;
+				};
+				modules =  [
+					./hosts/vb-vm/configuration.nix
 					home-manager.nixosModules.home-manager {
 						home-manager = {
 							useGlobalPkgs = true;
