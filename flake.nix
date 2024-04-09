@@ -2,12 +2,10 @@
   description = "NixOs Config";
 
 
-  outputs = inputs @{ self, nixpkgs, nixpkgs-unstable, home-manager, nixvim,hyprland, hyprlock, hypridle, plasma-manager, ...}: 
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, nixvim,hyprland, hyprlock, hypridle, plasma-manager, ...}@ inputs: 
 	let
 		systemSettings =  {
 			system 	 = "x86_64-linux";
-			timezone = "Europe/Brussels";
-			locale   = "en_US.UTF-8";
 	 		layout   = "fr";
 		};
 		userSettings = {
@@ -24,7 +22,7 @@
 			system = systemSettings.system;
 			config.allowUnfree=true;		
 		};
-		pkgs-unstable = import  nixpkgs-unstable {
+		upkgs= import  nixpkgs-unstable {
 			system = systemSettings.system;
 			config.allowUnfree=true;
 		};
@@ -36,7 +34,7 @@
       dragon = lib.nixosSystem {
 				system = systemSettings.system;
 				specialArgs = {
-					inherit pkgs-unstable;
+					inherit upkgs;
 					inherit userSettings;
 					inherit systemSettings;
 					inherit hyprland hyprlock hypridle ;
@@ -46,12 +44,9 @@
 					home-manager.nixosModules.home-manager {
 						home-manager = {
 							useGlobalPkgs = true;
-							useUserPackages = true;
-							users.${userSettings.user} = {
-								imports = [./home/${userSettings.user}/dragon/home.nix];
-							};
+	 						useUserPackages = true;
 							extraSpecialArgs = {
-								inherit pkgs-unstable;
+								inherit upkgs;
 								inherit userSettings;
 								inherit nixvim;
 
@@ -60,28 +55,25 @@
 					}
 				];
 			};
-			vb-vm = lib.nixosSystem {
+			vmlab = lib.nixosSystem {
 				system = systemSettings.system;
-				specialArgs = {
-					inherit pkgs-unstable;
-					inherit userSettings;
+				specialArgs = { 
+					inherit inputs;	
+					inherit pkgs;
+					inherit upkgs;
 					inherit systemSettings;
-					inherit hyprland hyprlock hypridle ;
 				};
+
 				modules =  [
-					./hosts/vb-vm/configuration.nix
+					./hosts/vmlab/configuration.nix
 					home-manager.nixosModules.home-manager {
 						home-manager = {
 							useGlobalPkgs = true;
 							useUserPackages = true;
-							users.${userSettings.user} = {
-								imports = [./home.nix];
-							};
 							extraSpecialArgs = {
-								inherit pkgs-unstable;
-								inherit userSettings;
-								inherit nixvim;
-
+								inherit inputs;
+								inherit pkgs;
+								inherit upkgs;
 							};	
 						};
 					}
@@ -130,7 +122,7 @@
    		 hypridle = {
 			url = "github:hyprwm/hypridle";
 			inputs.nixpkgs.follows = "nixpkgs-unstable";
-		};
+		}; 
 
 		# Plasma
 		plasma-manager = {

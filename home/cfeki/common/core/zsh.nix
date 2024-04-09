@@ -4,8 +4,9 @@ let
 	aliases = {
 		cat = "bat";
 		htop = "btop";
-		nxbuild = "sudo nixos-rebuild switch --flake ~/nixos-config/.#vb-vm";
-		nxtest = "sudo nixos-rebuild test --flake ~/nixos-config/.#vb-vm ";
+		top = "btop";
+		nxbuild = "sudo nixos-rebuild switch --flake ~/nixos-config/.#vmlab";
+		nxtest = "sudo nixos-rebuild test --flake ~/nixos-config/.#vmlab ";
 		vim = "nvim";
 	};
 
